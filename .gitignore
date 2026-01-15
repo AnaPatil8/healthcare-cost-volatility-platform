@@ -18,3 +18,20 @@ __pycache__/
 # OS junk
 .DS_Store
 Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# Data (generated / synthetic)
+data/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS / editor
+.vscode/
+.DS_Store
