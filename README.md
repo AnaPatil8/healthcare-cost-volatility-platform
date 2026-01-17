@@ -49,14 +49,28 @@ The diagram below illustrates the end-to-end pipeline used to generate member-le
 
 ```mermaid
 flowchart LR
-    A[Synthetic Member-Month Cost Data<br/>(Claims-like Distribution)] --> B[Data Validation & Structuring]
-    B --> C[Temporal Feature Engineering<br/>(Rolling Mean, Std, Quantiles)]
-    C --> D[Historical Cost Baseline]
-    D --> E[Volatility Label Construction<br/>(Spike Flags & Tiers)]
-    E --> F[Model Training & Scoring]
-    F --> G[Volatility & Spike Risk Scores]
-    G --> H[Financial Volatility Index (FVI)]
-    H --> I[Decision Support<br/>(Finance & Care Review)]
+    %% Data Layer
+    A["Synthetic Member-Month Cost Data"]:::data --> B["Data Validation & Structuring"]:::process
+
+    %% Feature & Label Layer
+    B --> C["Temporal Feature Engineering"]:::process
+    C --> D["Historical Cost Baseline"]:::process
+    D --> E["Volatility Label Construction"]:::label
+
+    %% Modeling Layer
+    E --> F["Model Training & Scoring"]:::model
+    F --> G["Volatility & Spike Risk Scores"]:::model
+
+    %% Decision Layer
+    G --> H["Financial Volatility Index (FVI)"]:::decision
+    H --> I["Decision Support"]:::decision
+
+    %% Styling
+    classDef data fill:#f4f6fa,stroke:#4a6cf7,stroke-width:1px
+    classDef process fill:#ffffff,stroke:#9aa4b2,stroke-width:1px
+    classDef label fill:#fff7e6,stroke:#f5a623,stroke-width:1px
+    classDef model fill:#eefbf3,stroke:#2fa36b,stroke-width:1px
+    classDef decision fill:#f0fdf4,stroke:#16a34a,stroke-width:1px
 
 ```
 ---
