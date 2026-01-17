@@ -47,30 +47,9 @@ This approach enables full reproducibility while preserving realistic modeling c
 ## System Overview
 The diagram below illustrates the end-to-end pipeline used to generate member-level cost volatility risk signals.
 
-```mermaid
-flowchart LR
-    %% Data Layer
-    A["Synthetic Member-Month Cost Data"]:::data --> B["Data Validation & Structuring"]:::process
+![System Overview](docs/system_overview.png)
 
-    %% Feature & Label Layer
-    B --> C["Temporal Feature Engineering"]:::process
-    C --> D["Historical Cost Baseline"]:::process
-    D --> E["Volatility Label Construction"]:::label
-
-    %% Modeling Layer
-    E --> F["Model Training & Scoring"]:::model
-    F --> G["Volatility & Spike Risk Scores"]:::model
-
-    %% Decision Layer
-    G --> H["Financial Volatility Index (FVI)"]:::decision
-    H --> I["Decision Support"]:::decision
-
-    %% Styling
-    classDef data fill:#f4f6fa,stroke:#4a6cf7,stroke-width:1px
-    classDef process fill:#ffffff,stroke:#9aa4b2,stroke-width:1px
-    classDef label fill:#fff7e6,stroke:#f5a623,stroke-width:1px
-    classDef model fill:#eefbf3,stroke:#2fa36b,stroke-width:1px
-    classDef decision fill:#f0fdf4,stroke:#16a34a,stroke-width:1px
+*Figure: End-to-end batch pipeline for generating financial volatility risk signals from synthetic healthcare cost data.*
 
 ```
 ---
