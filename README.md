@@ -1,159 +1,184 @@
-# Healthcare Financial Volatility Index (FVI)
+# Healthcare Cost Volatility Prediction Platform
 
-## Overview
+## Executive Summary
+Healthcare organizations struggle not only with high medical costs, but with **unpredictable cost behavior**. Sudden deviations in member spending introduce budgeting risk, reserve pressure, and reactive decision-making.
 
-This project implements an end-to-end **Financial Volatility Index (FVI)** designed to identify health plan members likely to become **financially unpredictable** in the near term.
+This project focuses on **predicting healthcare cost volatility** rather than total cost. The goal is to identify members whose future spending is likely to **deviate significantly from their historical cost patterns**, enabling earlier financial planning and targeted review.
 
-Unlike traditional cost prediction models that estimate expected spend, the FVI focuses on **variance and instability**, enabling proactive risk management, budgeting, and care intervention strategies.
-
----
-
-## Problem Statement
-
-Health insurance organizations face a critical challenge that extends beyond identifying high-cost members.
-
-The core issue is **financial unpredictability** — members who suddenly deviate from their expected cost trajectories due to changes in health status, utilization patterns, or care settings.
-
-These deviations introduce volatility into:
-- reserve planning
-- actuarial forecasting
-- operational decision-making
-
-Standard regression-based cost models are not designed to capture this behavior.
+The platform demonstrates an end-to-end applied machine learning workflow, including data generation, feature engineering, leakage-aware modeling, and decision-oriented risk scoring.
 
 ---
 
-## Solution Summary
+## Why Cost Volatility Instead of Cost Prediction
+Traditional healthcare models focus on predicting absolute cost or utilization. While useful, these approaches often fail to capture **instability**, which is what most directly impacts financial planning and forecasting.
 
-The Financial Volatility Index quantifies near-term cost instability by separating **risk likelihood** from **risk impact**.
+This project reframes the problem as:
+- Who is likely to experience **unexpected cost changes**, not just high costs?
+- Which members introduce **budget risk** due to spending volatility?
 
-Two complementary models are combined:
-
-- A **classification model** estimating the probability of a sudden cost spike
-- A **regression model** estimating the expected magnitude of cost volatility
-
-The final index is defined as:
-
-**FVI = Probability of cost spike × Expected volatility magnitude**
-
-This formulation prioritizes members by **risk-weighted financial instability**, not raw cost alone.
+This framing aligns closely with the needs of:
+- FP&A and budgeting teams  
+- Medical economics and actuarial support  
+- Strategic healthcare analytics  
 
 ---
 
-## System Design
+## Problem Definition
+The objective is to predict **future cost volatility at the member level** using historical, claims-like data.
 
-The system is implemented as a modular, batch-oriented analytics pipeline aligned with real-world healthcare data workflows.
-
-Key components include:
-
-- **Feature Engineering**
-  - Rolling cost statistics
-  - Utilization and event-based indicators
-  - Risk and demographic signals
-
-- **Spike Probability Modeling**
-  - Binary classification of sudden cost escalation events
-  - Temporal (out-of-time) validation to prevent leakage
-
-- **Volatility Magnitude Modeling**
-  - Regression-based estimation of cost dispersion
-  - Explicit handling of missing and delayed feature availability
-
-- **Index Construction**
-  - Combination of likelihood and magnitude into a single FVI score
-  - Risk tiering based on population percentiles
-
-- **Decision Support Interface**
-  - Streamlit-based dashboard for filtering, ranking, and exporting results
-  - Member-level rollups for operational consumption
-
-This separation between scoring logic and presentation mirrors production healthcare analytics systems.
+Rather than modeling raw spend, the system estimates deviation from an individual’s **expected cost baseline** over time, capturing instability that may indicate emerging financial or care-related risk.
 
 ---
 
-## Validation Approach
+## Data Strategy (Synthetic Data)
+Real healthcare claims data cannot be publicly shared due to privacy and regulatory constraints. To address this, the project uses **synthetically generated member-month cost data** designed to mimic the statistical and behavioral properties of real claims data.
 
-Model performance was evaluated using deployment-realistic practices:
+The synthetic dataset simulates:
+- Member-level baseline risk and demographics  
+- Heavy-tailed healthcare cost distributions  
+- Utilization-driven costs (e.g., ER and inpatient events)  
+- Seasonality effects  
+- Rare but impactful cost shock events  
 
-- Temporal splits were used instead of random sampling
-- A data leakage audit was conducted after detecting unrealistic error metrics
-- Label-derived features were identified and removed
-- Final metrics reflect performance on unseen future periods only
-
-This process ensures that reported results are representative of real-world usage.
-
----
-
-## Results
-
-**Spike Probability Model**
-- ROC-AUC: 0.792
-- Base spike rate: approximately 8%
-- Spike rate within the highest FVI tier: approximately 51%
-- Approximately six-fold lift over baseline risk
-
-**Volatility Magnitude Model**
-- RMSE: approximately 4,300
-- Designed to capture dispersion rather than mean cost
-
-The combined index successfully concentrates financial shocks into a small, high-risk subset suitable for proactive action.
+This approach enables full reproducibility while preserving realistic modeling challenges.
 
 ---
 
-## Practical Applications
+## System Overview
+The diagram below illustrates the end-to-end pipeline used to generate member-level cost volatility risk signals.
 
-- **Finance and Actuarial Teams**
-  - Improved reserve planning through volatility-aware risk estimates
-- **Care Management**
-  - Targeted outreach to members at risk of destabilizing utilization
-- **Population Health Analytics**
-  - Transition from reactive cost control to proactive risk stabilization
+```mermaid
+flowchart LR
+    A[Synthetic Member-Month Cost Data<br/>(Claims-like Distribution)] --> B[Data Validation & Structuring]
+    B --> C[Temporal Feature Engineering<br/>(Rolling Mean, Std, Quantiles)]
+    C --> D[Historical Cost Baseline]
+    D --> E[Volatility Label Construction<br/>(Spike Flags & Tiers)]
+    E --> F[Model Training & Scoring]
+    F --> G[Volatility & Spike Risk Scores]
+    G --> H[Financial Volatility Index (FVI)]
+    H --> I[Decision Support<br/>(Finance & Care Review)]
 
----
-
-## Interactive Dashboard
-
-An analyst-facing Streamlit application enables:
-
-- Uploading batch-scored FVI outputs
-- Filtering by risk tier and spike probability
-- Generating downloadable watchlists
-- Reviewing member-level risk summaries
-
-The interface is designed to reflect how analytics outputs are consumed in healthcare organizations.
-
----
-
-## Running the Project Locally
-
-The Financial Volatility Index is generated using a batch scoring pipeline and consumed through an analyst-facing dashboard. To run the project locally, first execute the batch scoring module, which produces a scored output file containing member-level Financial Volatility Index values. Once scoring is complete, launch the Streamlit application and upload the generated CSV file when prompted to explore risk tiers, filter high-volatility members, and export operational watchlists.
-
-```bash
-python -m src.modeling.build_fvi
-streamlit run app/app.py
 ```
 ---
+## Feature Engineering Approach
+Features are designed to capture **change, instability, and deviation over time**, rather than static cost snapshots.
 
-## Technology Stack
+Key feature categories include:
+- Rolling cost statistics (mean, standard deviation, quantiles) over multiple time windows  
+- Member-relative spike indicators (cost exceeding historical percentiles)  
+- Global spike indicators (absolute high-cost events)  
+- Temporal variability and trend measures  
 
-The project is implemented using a lightweight but production-representative analytics stack. Core data processing and modeling are performed in Python using Pandas and NumPy, with Scikit-learn for classification and regression workflows. An interactive Streamlit application is used to expose batch-scored outputs through an analyst-facing decision support interface. The overall structure emphasizes modularity, reproducibility, and clear separation of concerns between data preparation, modeling, and presentation.
+Early time periods without sufficient historical context are explicitly excluded from modeling to prevent artificial signal and target leakage.
+
+---
+
+## Label Design
+The volatility problem is intentionally decomposed into **two complementary targets**, reflecting how real-world financial risk systems operate.
+
+### 1. Spike Classification
+A binary indicator representing whether a member experiences a cost spike relative to their historical behavior.
+
+This answers:
+> *“Is a volatility event likely to occur?”*
+
+Member-relative and global thresholds are used to distinguish unexpected instability from consistently high-cost behavior.
+
+---
+
+### 2. Volatility Magnitude Regression
+A continuous measure representing the **severity of instability** when it occurs.
+
+This answers:
+> *“How large could the deviation from expected cost be?”*
+
+Separating event detection from magnitude estimation allows for clearer modeling, evaluation, and operational use.
+
+---
+
+## Modeling Approach
+Simple, interpretable baseline models are used intentionally to establish credibility and transparency:
+
+- **Logistic Regression** for spike classification  
+- **Linear Regression** for volatility magnitude estimation  
+
+Model selection prioritizes:
+- Interpretability  
+- Stability on noisy healthcare data  
+- Ease of leakage detection and diagnosis  
+
+This baseline-first approach ensures signal is understood before introducing additional complexity.
+
+---
+
+## Validation Strategy
+Random train-test splits can leak future information in time-series healthcare data. To avoid this, the project uses **out-of-time validation**:
+
+- Models are trained on earlier time periods  
+- Performance is evaluated on later, unseen periods  
+
+This mirrors real-world deployment, where models are trained on historical data and used to score future behavior.
+
+---
+
+## Leakage Detection and Mitigation
+During development, unusually perfect model performance triggered further investigation.
+
+Correlation analysis revealed that some rolling statistics used as features were direct proxies for the volatility labels, introducing target leakage.
+
+Corrective actions included:
+- Removing label-derived features  
+- Re-training models  
+- Accepting lower but honest performance  
+
+This process reflects real-world ML practice, where detecting and fixing leakage is critical for trustworthiness.
+
+---
+
+## Financial Volatility Index (FVI)
+To support decision-making, probability and impact are combined into a single risk score:
+
+**FVI = P(Spike) × Expected Volatility**
+
+This produces a rankable signal that balances:
+- Likelihood of instability  
+- Financial severity if instability occurs  
+
+Members are segmented into Low, Medium, and High volatility tiers based on capacity-aware thresholds, enabling practical prioritization.
+
+---
+
+## Evaluation Philosophy
+Healthcare cost data is inherently noisy, and point-accuracy metrics alone are insufficient.
+
+Evaluation focuses on:
+- Lift and concentration of events in high-risk segments  
+- Stability of risk rankings over time  
+- Practical usefulness for monitoring and planning  
+
+The goal is **decision support**, not exact dollar prediction.
 
 ---
 
 ## Design Considerations
+The project is structured to support future extension, including:
+- Alternative volatility definitions  
+- Model replacement or retraining  
+- Integration of additional signals (e.g., utilization detail, pharmacy, administrative events)  
 
-The system was designed to reflect real-world healthcare analytics constraints and usage patterns. A batch-first architecture was selected to align with delayed data availability and periodic scoring cycles common in insurance environments. Modeling logic is intentionally decoupled from the presentation layer to ensure that training and scoring pipelines remain reproducible and auditable. Synthetic data is used throughout to mirror compliance requirements while preserving realistic statistical behavior. Emphasis was placed on interpretability, temporal validation, and operational usability rather than purely optimizing predictive metrics.
-
----
-
-## Data Disclaimer
-
-All data used in this project is fully synthetic and generated exclusively for demonstration purposes. The data does not represent real individuals, claims, or clinical events, and no proprietary or patient-level information is included. This approach reflects common compliance and privacy constraints encountered in healthcare analytics environments.
+The emphasis is on modularity, reproducibility, and clarity rather than overengineering.
 
 ---
 
-## Future Enhancements
+## Limitations and Future Work
+- Synthetic data cannot capture all clinical and operational nuance  
+- Volatility is influenced by administrative and external factors not modeled here  
+- Future iterations could incorporate richer signals, monitoring logic, and retraining cadence  
 
-Potential extensions of this work include exposing the scoring logic through an API-based inference service, implementing monitoring to detect index drift over time, and integrating the index with care management or financial planning workflows. Additional feature enrichment using proxy variables for social and behavioral risk could further improve early detection of financial instability. These enhancements would support transition from analytical prototype to production-ready deployment.
+---
 
+## Key Takeaways
+- Cost volatility is distinct from cost magnitude and represents a critical financial risk signal  
+- Leakage-aware feature and label design is essential in healthcare ML  
+- Simple, interpretable models can deliver meaningful, decision-ready insights  
 
