@@ -51,7 +51,7 @@ The diagram below illustrates the end-to-end pipeline used to generate member-le
 
 *Figure: End-to-end batch pipeline for generating financial volatility risk signals from synthetic healthcare cost data.*
 
-```
+
 ---
 ## Feature Engineering Approach
 Features are designed to capture **change, instability, and deviation over time**, rather than static cost snapshots.
