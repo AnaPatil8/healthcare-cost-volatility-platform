@@ -47,7 +47,7 @@ This approach enables full reproducibility while preserving realistic modeling c
 ## System Overview
 The diagram below illustrates the end-to-end pipeline used to generate member-level cost volatility risk signals.
 
-![System Overview](docs/system_overview.png)
+![System Overview](docs/system_overview.PNG)
 
 *Figure: End-to-end batch pipeline for generating financial volatility risk signals from synthetic healthcare cost data.*
 
