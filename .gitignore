@@ -29,9 +29,14 @@ venv/
 # Data (generated / synthetic)
 data/
 
+# Data files (do NOT commit large data)
+data/public/*.csv
+data/public/processed/*.csv
+
 # Notebooks
 .ipynb_checkpoints/
 
 # OS / editor
 .vscode/
 .DS_Store
+Thumbs.db

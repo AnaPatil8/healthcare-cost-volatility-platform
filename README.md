@@ -24,23 +24,32 @@ This framing aligns closely with the needs of:
 ---
 
 ## Problem Definition
-The objective is to predict **future cost volatility at the member level** using historical, claims-like data.
+The objective is to predict **future healthcare cost volatility at the geographic (county) level, with extensibility to member-level modeling** using historical, claims-like data.
 
 Rather than modeling raw spend, the system estimates deviation from an individual’s **expected cost baseline** over time, capturing instability that may indicate emerging financial or care-related risk.
 
 ---
 
-## Data Strategy (Synthetic Data)
-Real healthcare claims data cannot be publicly shared due to privacy and regulatory constraints. To address this, the project uses **synthetically generated member-month cost data** designed to mimic the statistical and behavioral properties of real claims data.
+## Data Strategy (Synthetic + Public Real-World Data)
 
-The synthetic dataset simulates:
-- Member-level baseline risk and demographics  
-- Heavy-tailed healthcare cost distributions  
-- Utilization-driven costs (e.g., ER and inpatient events)  
-- Seasonality effects  
-- Rare but impactful cost shock events  
+The project uses a hybrid data strategy that combines **synthetic data for prototyping** with **public, real-world healthcare datasets** for realistic modeling and validation.
 
-This approach enables full reproducibility while preserving realistic modeling challenges.
+### Public Data Sources
+To ground the volatility framework in real healthcare behavior, the system integrates:
+
+- **CMS Geographic Variation Public Use File**  
+  County-level Medicare spending, utilization, and risk metrics (2014–2023), accessed programmatically via the CMS Public API.
+
+- **American Community Survey (ACS 5-Year Estimates)**  
+  County-level sociodemographic indicators including population, income, and poverty rates.
+
+- **Bureau of Labor Statistics CPI (Annual)**  
+  Macro-level inflation indicators to contextualize temporal cost changes.
+
+All data sources are publicly available, privacy-safe, and reproducible.
+
+### Synthetic Data Usage
+Synthetic member-level data is retained for early experimentation and controlled stress-testing of volatility definitions. This enables rapid iteration without exposing sensitive information, while real-world datasets are used for downstream validation and benchmarking.
 
 ---
 
@@ -49,10 +58,39 @@ The diagram below illustrates the end-to-end pipeline used to generate member-le
 
 ![System Overview](docs/system_overview.PNG)
 
-*Figure: End-to-end batch pipeline for generating financial volatility risk signals from synthetic healthcare cost data.*
+*Figure: End-to-end batch pipeline integrating public healthcare, socioeconomic, and macroeconomic data to generate volatility risk signals.*
 
 
 ---
+
+## Real-World County-Level Volatility Modeling
+
+To validate the volatility framework on real data, the project implements a county-year modeling pipeline using CMS, ACS, and CPI data.
+
+### Target Definition
+Volatility is defined as the **absolute year-over-year percentage change** in per-capita Medicare spending at the county level:
+
+- Features at year *t* are used to predict volatility at year *t+1*
+- End-of-series years are excluded to prevent target leakage
+
+### Modeling Dataset
+The final modeling table contains:
+
+- ~28,000 county-year observations
+- Coverage from 2014 to 2022
+- Integrated healthcare utilization, risk, socioeconomic, and macroeconomic signals
+
+### Baseline Results
+A leakage-aware linear regression baseline achieves:
+
+- Meaningful separation between high-volatility and average counties
+- Strong lift in the top-risk decile compared to the overall population
+
+These results establish a credible performance floor before introducing more complex models.
+
+
+---
+
 ## Feature Engineering Approach
 Features are designed to capture **change, instability, and deviation over time**, rather than static cost snapshots.
 
