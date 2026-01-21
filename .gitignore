@@ -1,5 +1,6 @@
 # virtual environment
 venv/
+.env/
 
 # data (generated)
 data/synthetic/
@@ -8,6 +9,7 @@ data/public/
 # python junk
 __pycache__/
 *.pyc
+*.pyo
 .ipynb_checkpoints/
 .ipython/
 .jupyter/
@@ -40,3 +42,11 @@ data/public/processed/*.csv
 .vscode/
 .DS_Store
 Thumbs.db
+
+
+# Large / generated data (optional – adjust if needed)
+data/processed/
+data/raw/
+
+# Logs
+*.log
