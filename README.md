@@ -54,12 +54,9 @@ Synthetic member-level data is retained for early experimentation and controlled
 ---
 
 ## System Overview
-The diagram below illustrates the end-to-end pipeline used to generate member-level cost volatility risk signals.
+*A detailed pipeline diagram is under active revision and will be added in a future update.*
 
-![System Overview](docs/system_overview.PNG)
-
-*Figure: End-to-end batch pipeline integrating public healthcare, socioeconomic, and macroeconomic data to generate volatility risk signals.*
-
+The current implementation follows a modular, batch-based workflow covering data ingestion, validation, feature engineering, leakage-aware modeling, and decision-oriented scoring.
 
 ---
 
@@ -149,6 +146,19 @@ Random train-test splits can leak future information in time-series healthcare d
 - Performance is evaluated on later, unseen periods  
 
 This mirrors real-world deployment, where models are trained on historical data and used to score future behavior.
+
+---
+
+##Model Explainability and Transparency
+Healthcare financial models must support auditability and stakeholder trust. To ensure that volatility predictions are interpretable and defensible, the project incorporates post-hoc model explainability using SHAP (SHapley Additive Explanations).
+
+SHAP values are used to quantify the marginal contribution of each feature to the predicted volatility for a given county-year observation. This enables both global and local interpretability, helping answer questions such as which factors most strongly drive volatility risk across counties and why a specific county was flagged as high risk in a given year.
+
+At the global level, SHAP analysis consistently highlights prior per-capita spending, utilization intensity, and population-adjusted utilization rates as the primary drivers of future volatility. Socioeconomic variables such as median household income and poverty rate provide secondary context, particularly in counties with structurally constrained access patterns.
+
+At the local level, SHAP explanations support case-by-case analysis, enabling analysts to understand why a county’s risk score changed over time. This design aligns with real-world healthcare and financial analytics requirements, where model outputs must be explainable, reviewable, and suitable for governance and decision support rather than opaque prediction alone.
+
+Explainability artifacts are generated as part of the modeling workflow and can be reproduced consistently as data sources or models evolve.
 
 ---
 

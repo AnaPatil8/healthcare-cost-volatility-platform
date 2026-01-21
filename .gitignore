@@ -1,52 +1,30 @@
-# virtual environment
+# --- Virtual env / secrets ---
 venv/
+.env
 .env/
 
-# data (generated)
-data/synthetic/
-data/public/
-
-# python junk
+# --- Python cache / junk ---
 __pycache__/
 *.pyc
 *.pyo
+
+# --- Notebooks / Jupyter ---
 .ipynb_checkpoints/
 .ipython/
 .jupyter/
 
-# editor
+# --- Editors / OS ---
 .vscode/
-
-# OS junk
 .DS_Store
 Thumbs.db
 
-# Python
-__pycache__/
-*.pyc
-
-# Virtual environment
-venv/
-
-# Data (generated / synthetic)
+# --- Data (generated; don't commit) ---
 data/
+!data/README.md
+!data/public/README.md
+!data/public/processed/README.md
 
-# Data files (do NOT commit large data)
-data/public/*.csv
-data/public/processed/*.csv
-
-# Notebooks
-.ipynb_checkpoints/
-
-# OS / editor
-.vscode/
-.DS_Store
-Thumbs.db
-
-
-# Large / generated data (optional – adjust if needed)
-data/processed/
-data/raw/
-
-# Logs
+# --- Reports / artifacts (generated) ---
+reports/
+artifacts/
 *.log
