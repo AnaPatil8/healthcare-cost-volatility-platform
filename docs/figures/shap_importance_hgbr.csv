@@ -1,0 +1,9 @@
+feature,mean_abs_shap
+cms_benes_total_cnt,1.579272670044204
+cms_ip_cvrd_stays_per_1000_benes,0.5383938238467114
+acs_population,0.4588111965476529
+cms_tot_mdcr_pymt_pc,0.20817247398970373
+cms_bene_avg_risk_score,0.11124936148202924
+acs_poverty_rate,0.10863236177699022
+cms_er_visits_per_1000_benes,0.10231050156052082
+acs_median_household_income,0.0971236811729776

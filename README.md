@@ -77,6 +77,17 @@ The final modeling table contains:
 - Coverage from 2014 to 2022
 - Integrated healthcare utilization, risk, socioeconomic, and macroeconomic signals
 
+## Explainability (SHAP)
+
+To make the county-level volatility model interpretable, we compute SHAP values on the **test window (year ≥ 2021)** using the trained HistGradientBoostingRegressor.
+
+### SHAP Summary Plot (Global Feature Effects)
+![SHAP Summary](docs/figures/shap_summary_hgbr.png)
+
+### Global Feature Importance (CSV)
+A ranked global importance table is saved here:
+- `docs/figures/shap_importance_hgbr.csv`
+
 ### Baseline Results
 A leakage-aware linear regression baseline achieves:
 
